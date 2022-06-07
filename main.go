@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/leymebamba1598/GolangNortwingRestApi/database"
+)
 
 func main() {
-	fmt.Println("Hola a todos")
+
+	databaseConnection:=database.InitDB()
+
+	//Logica
+	defer databaseConnection.Close() //se ejecuta cuando finaliza la funcion
+	fmt.Println("data", databaseConnection)
+
 }
+
+
