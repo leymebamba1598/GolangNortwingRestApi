@@ -8,6 +8,7 @@ type Repository interface{
 	GetProductById(productId int)(*Product, error)
 	getProducts(params *getProductsRequest)([]*Product, error)
 	getTotalProducts()(int,error)
+	InsertProduct(params *getAddProductsRequest)(int64, error)
 }
 
 type repository struct {
@@ -67,4 +68,20 @@ func (repo *repository) GetProductById(productId int)(*Product, error){
 			panic(err)
 		}
 		return total, nil
+	}
+
+	func (repo *repository)	InsertProduct(params *getAddProductsRequest)(int64, error){
+		const sql =`insert into products 
+		(product_code, product_name,category,description, list_price,standard_cost)
+		values(?,?,?,?,?,?)`
+
+		result, err := repo.db.Exec(sql,params.ProductCode,params.ProductName,
+			params.Category,params.Description,params.ListPrice,params.StandardCost)
+			if(err != nil){
+				panic(err)
+			}
+		
+		id,_:= result.LastInsertId()
+		return id, nil
+
 	}

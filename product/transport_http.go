@@ -21,10 +21,16 @@ func MakeHttpHandler(s Service) http.Handler {
 	r.Method(http.MethodGet, "/{id}",getProductByIdHandler)
 
 	getProductsHandler:=httptransport.NewServer(makeGetProductsEndPoint(s),
-	getProductsRequestDecoder,
-	httptransport.EncodeJSONResponse) //codifica el response
+		getProductsRequestDecoder,
+		httptransport.EncodeJSONResponse) //codifica el response
 	
 	r.Method(http.MethodPost,"/paginated",getProductsHandler)
+	
+    addProductHandler:= httptransport.NewServer(makeAddProductEndpoint(s),
+		addProductRequestDecoder,
+		httptransport.EncodeJSONResponse)
+	
+	r.Method(http.MethodPost, "/",addProductHandler)
 	
 	return r
 }
@@ -45,4 +51,13 @@ func getProductsRequestDecoder(context context.Context, r *http.Request)(interfa
 		panic(err)
 	}
 	return request,nil
+}
+
+func addProductRequestDecoder(context context.Context, r *http.Request)(interface{}, error){
+   request:= getAddProductsRequest{}
+   err:=json.NewDecoder(r.Body).Decode(&request)
+   if err != nil {
+	panic(err)
+  }
+  return request,nil
 }
